@@ -53,7 +53,7 @@ const getPriceMessage = (lastModelYPrice, newModelYPrice) =>
   'A Model Y changed price from $' + lastModelYPrice + ' to $' + newModelYPrice;
 
 const sendNotification = async (message, diffedCars) => {
-  const url = 'http://localhost:3000/sendNotification';
+  const url = 'http://localhost:3000/notification';
 
   return fetch(url, {
     method: 'POST',

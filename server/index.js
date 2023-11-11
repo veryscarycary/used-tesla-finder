@@ -12,7 +12,7 @@ app.use(cors()); // Enable CORS for all routes
 
 app.use(express.json());
 
-app.post('/trigger', async (req, res) => {
+app.post('/notification', async (req, res) => {
   const url = `https://maker.ifttt.com/trigger/send_tesla_text/with/key/${IFTTT_KEY}`;
 
   console.log(req.body);
