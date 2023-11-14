@@ -33,8 +33,8 @@ module.exports = {
     city: STR,
     state: STR,
     transportation_fee: INT,
-    dateAdded: DATE, //dates resolved, user Id
-    dateRemoved: DATE, //dates resolved, user Id
+    dateAdded: DATE, // date added to inventory
+    dateRemoved: DATE, // date removed from inventory(sold)
   },
   carUpdate: {
     id: {
@@ -47,5 +47,7 @@ module.exports = {
       required: true,
       foreignKey: true,
     },
+    price: INT,
+    date: DATE,
   },
 };

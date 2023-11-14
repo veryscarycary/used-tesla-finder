@@ -49,7 +49,7 @@ sequelize
             }
             return Car.create(jsonItem).then((data) =>
               CarUpdate.bulkCreate(
-                updates.map((articleId) => ({
+                updates.map((carUpdateId) => ({
                   carId: data.id,
                   carUpdateId: carUpdateId,
                   id: `T${data.id}A${carUpdateId}`,
