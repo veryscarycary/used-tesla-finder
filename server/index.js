@@ -2,7 +2,7 @@ require('dotenv').config();
 require('../client/index');
 // require('./db/index.js');
 
-const { getBestModelYsUnderPrice, getModelYDiff } = require('./utils');
+const { getBestModelYsUnderPrice, getModelYDiff, sendNotification } = require('./utils');
 
 const express = require('express');
 const cors = require('cors');
@@ -31,9 +31,17 @@ app.post('/scrape', async (req, res) => {
   if (!isFirstScrape) {
     await getModelYDiff(newModelYs, lastModelYs);
   } else {
-    lastModelYs = newModelYs;
     isFirstScrape = false;
   }
+
+  lastModelYs = newModelYs;
+});
+
+app.post('/client-failure', async (req, res) => {
+  const { message } = req.body;
+  const errorMessage = `Client error encountered: ${message}`;
+  console.error(errorMessage);
+  await sendNotification(errorMessage);
 });
 
 app.listen(port, () => {

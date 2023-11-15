@@ -75,7 +75,6 @@ const getModelYDiff = async (newestModelYs, lastModelYs) => {
     }
   }
 
-  lastModelYs = newestModelYs;
 };
 
 const getRemovedMessage = (removedModelYs) => {

@@ -2,15 +2,15 @@ const { runScriptInDevTools } = require('./utils');
 
 const devToolsScript = `
 
-const sendToServer = async (teslaResponse) => {
-  const url = 'http://localhost:3000/scrape';
+const sendToServer = async (route, payload) => {
+  const url = 'http://localhost:3000' + route;
 
   return fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(teslaResponse),
+    body: JSON.stringify(payload),
   });
 };
 
@@ -40,27 +40,30 @@ const fetchModelYsFromTesla = async () => {
   };
 
   let resp;
+  let response;
   try {
     resp = await fetch(url, headers);
+    response = await resp.json();
+    console.log(response, 'Date: ' + new Date());
+
+    await sendToServer('/scrape', response);
   } catch (error) {
     console.error(
       'Error making the Tesla Used Car Inventory request:',
       error.message
     );
+    await sendToServer('/client-failure', { message: error.message });
   }
 
-  const response = await resp.json();
-  console.log(response, 'Date: ' + new Date());
-
-  await sendToServer(response);
   return response;
 };
 
-fetchModelYsFromTesla();
+
+await fetchModelYsFromTesla();
 
 setInterval(async function () {
   await fetchModelYsFromTesla();
-}, 1000 * 60 * 5); // every 5 minutes;
+}, 1000 * 30); // every 5 minutes;
 
 `;
 
