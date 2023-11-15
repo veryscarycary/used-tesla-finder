@@ -26,7 +26,7 @@ app.post('/scrape', async (req, res) => {
 
   const newModelYs = getBestModelYsUnderPrice(results, MAX_PRICE);
 
-  console.log(newModelYs, `Date: ${new Date().tolocaleString()}`);
+  console.log(newModelYs, `Date: ${new Date()}`);
 
   if (!isFirstScrape) {
     await getModelYDiff(newModelYs, lastModelYs);
