@@ -50,7 +50,7 @@ const fetchModelYsFromTesla = async () => {
   }
 
   const response = await resp.json();
-  console.log(response, 'Date: ' + new Date().tolocaleString());
+  console.log(response, 'Date: ' + new Date());
 
   await sendToServer(response);
   return response;
