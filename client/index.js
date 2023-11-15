@@ -59,11 +59,11 @@ const fetchModelYsFromTesla = async () => {
 };
 
 
-await fetchModelYsFromTesla();
+fetchModelYsFromTesla();
 
 setInterval(async function () {
   await fetchModelYsFromTesla();
-}, 1000 * 30); // every 5 minutes;
+}, 1000 * 60 * 5); // every 5 minutes;
 
 `;
 
