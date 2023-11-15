@@ -12,7 +12,7 @@ let sequelize = (module.exports.sequelize = new sequelize(uris.database, {
 }));
 
 //table definitions
-let Car = (module.exports.ticket = sequelize.define(
+let Car = (module.exports.car = sequelize.define(
   'car',
   schema.car
 ));
