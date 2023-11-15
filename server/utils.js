@@ -22,6 +22,7 @@ const getBestModelYsUnderPrice = (results, price) => {
       HasDamagePhotos,
       MetroName,
       Odometer,
+      OriginalInCustomerGarageDate,
       Price,
       TrimName,
       VrlName,
@@ -34,6 +35,7 @@ const getBestModelYsUnderPrice = (results, price) => {
       TrimName,
       DamageDisclosure,
       HasDamagePhotos,
+      OriginalInCustomerGarageDate,
       VIN,
     })
   );
