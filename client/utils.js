@@ -27,19 +27,6 @@ async function runScriptInDevTools(script) {
   }
 };
 
-// const getRemovedMessage = (removedModelYs) =>
-//   `${removedModelYs.length > 1 ? removedModelYs.length : 'A'} Model Y${
-//     removedModelYs.length > 1 ? 's' : ''
-//   } ha${removedModelYs.length > 1 ? 've' : 's'} been removed from inventory`;
-
-// const getAddedMessage = (addedModelYs) =>
-//   `${addedModelYs.length > 1 ? addedModelYs.length : 'A'} Model Y${
-//     addedModelYs.length > 1 ? 's' : ''
-//   } ha${addedModelYs.length > 1 ? 've' : 's'} been added to the inventory`;
-
-// const getPriceMessage = (lastModelYPrice, newModelYPrice) =>
-//   `A Model Y changed price from $${lastModelYPrice} to $${newModelYPrice}`;
-
 module.exports = {
   runScriptInDevTools,
 };
