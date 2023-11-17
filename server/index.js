@@ -1,6 +1,7 @@
 require('dotenv').config();
-require('../client/index');
-// require('./db/index.js');
+// require('../client/index');
+
+const { Car, CarUpdate } = require('../db/index.js');
 
 const { getBestModelYsUnderPrice, getModelYDiff, sendNotification } = require('./utils');
 
@@ -18,6 +19,17 @@ let isFirstScrape = true;
 let lastModelYs = [];
 
 // ROUTES
+
+// Create a new example
+app.post('/create', async (req, res) => {
+  try {
+    const newExample = await Car.create({ model: 'Model Y', odometer: 123000 });
+    res.json(newExample);
+  } catch (error) {
+    console.error('Error creating example', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 app.post('/scrape', async (req, res) => {
   // retreiving Tesla Used Car Inventory
