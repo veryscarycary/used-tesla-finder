@@ -1,3 +1,5 @@
+const { addCarToDb, updateCarAsRemovedFromDb, updatePriceOfCarInDb } = require("../db/utils");
+
 const IFTTT_KEY = process.env.IFTTT_KEY;
 
 const differenceBy = (arr1, arr2, iteratee) => {
@@ -18,24 +20,44 @@ const getBestModelYsUnderPrice = (results, price) => {
 
   const mappedResults = results.map(
     ({
+      ADL_OPTS,
+      AUTOPILOT,
+      City,
+      CABIN_CONFIG,
       DamageDisclosure,
       HasDamagePhotos,
-      MetroName,
+      INTERIOR,
+      Model,
       Odometer,
       OriginalInCustomerGarageDate,
+      PAINT,
       Price,
+      StateProvince,
       TrimName,
+      TransportationFee,
       VrlName,
       VIN,
+      WHEELS,
+      Year,
     }) => ({
       Price,
-      MetroName,
+      Model,
+      Year,
+      City,
+      StateProvince,
       VrlName,
       Odometer,
+      TransportationFee,
       TrimName,
+      AUTOPILOT,
+      ADL_OPTS,
+      PAINT,
+      INTERIOR,
       DamageDisclosure,
       HasDamagePhotos,
       OriginalInCustomerGarageDate,
+      CABIN_CONFIG,
+      WHEELS,
       VIN,
     })
   );
@@ -58,6 +80,10 @@ const getModelYDiff = async (newestModelYs, lastModelYs) => {
     console.log('Removed Model Ys:', removedModelYs);
     const removedMessage = getRemovedMessage(removedModelYs);
     await sendNotification(removedMessage, removedModelYs);
+
+    for (const carDTO of removedModelYs) {
+      await updateCarAsRemovedFromDb(carDTO);
+    }
   }
 
   for (const newCar of newestModelYs) {
@@ -71,6 +97,7 @@ const getModelYDiff = async (newestModelYs, lastModelYs) => {
           newCar.Price
         );
         await sendNotification(priceChangeMessage, newCar);
+        await updatePriceOfCarInDb(newCar);
       }
     }
   }

@@ -14,6 +14,12 @@ const carSchema = {
   //   required: true,
   //   primaryKey: true,
   // },
+  vin: {
+    type: STR,
+    unique: true,
+    required: true,
+    primaryKey: true,
+  },
   model: {
     type: ENUM,
     values: ['Model S', 'Model 3', 'Model X', 'Model Y'],
@@ -24,13 +30,15 @@ const carSchema = {
   odometer: INT,
   interior: STR,
   wheels: STR,
-  seat_layout: INT,
-  has_fsd: BOOL,
-  has_acceleration_boost: BOOL,
-  was_damaged: BOOL,
+  seatLayout: STR,
+  hasFsd: BOOL,
+  hasAccelerationBoost: BOOL,
+  wasDamaged: BOOL,
   city: STR,
   state: STR,
-  transportation_fee: INT,
+  storeName: STR,
+  transportationFee: INT,
+  originalInCustomerGarageDate: DATE,
   dateAdded: DATE, // date added to inventory
   dateRemoved: DATE, // date removed from inventory(sold)
 };

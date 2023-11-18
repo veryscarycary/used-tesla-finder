@@ -16,7 +16,6 @@ const carUpdateSchema = {
   //   foreignKey: true,
   // },
   price: INT,
-  date: DATE,
 };
 
 module.exports = carUpdateSchema;

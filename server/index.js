@@ -1,9 +1,9 @@
 require('dotenv').config();
-// require('../client/index');
-
-const { Car, CarUpdate } = require('../db/index.js');
+require('../db/index.js');
+require('../client/index.js');
 
 const { getBestModelYsUnderPrice, getModelYDiff, sendNotification } = require('./utils');
+const { addNewCarsToDb } = require('../db/utils');
 
 const express = require('express');
 const cors = require('cors');
@@ -21,15 +21,15 @@ let lastModelYs = [];
 // ROUTES
 
 // Create a new example
-app.post('/create', async (req, res) => {
-  try {
-    const newExample = await Car.create({ model: 'Model Y', odometer: 123000 });
-    res.json(newExample);
-  } catch (error) {
-    console.error('Error creating example', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
+// app.post('/create', async (req, res) => {
+//   try {
+//     const newExample = await Car.create({ model: 'Model Y', odometer: 123000 });
+//     res.json(newExample);
+//   } catch (error) {
+//     console.error('Error creating example', error);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
 
 app.post('/scrape', async (req, res) => {
   // retreiving Tesla Used Car Inventory
@@ -40,6 +40,9 @@ app.post('/scrape', async (req, res) => {
 
   console.log(newModelYs, `Date: ${new Date()}`);
 
+  // add cars to DB if they are missing
+  addNewCarsToDb(newModelYs);
+  
   if (!isFirstScrape) {
     await getModelYDiff(newModelYs, lastModelYs);
   } else {
