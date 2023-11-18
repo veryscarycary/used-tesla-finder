@@ -7,6 +7,9 @@ const DIALECT = 'postgres';
 const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
   host: HOST,
   dialect: DIALECT,
+  define: {
+    underscored: true,
+  },
 });
 
 module.exports = sequelize;

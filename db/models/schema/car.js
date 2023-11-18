@@ -7,13 +7,6 @@ const INT = DataTypes.INTEGER; //tinyint(1)
 const ENUM = DataTypes.ENUM; //enumerated
 
 const carSchema = {
-  // id: {
-  //   type: INT,
-  //   autoIncrement: true,
-  //   unique: true,
-  //   required: true,
-  //   primaryKey: true,
-  // },
   vin: {
     type: STR,
     unique: true,

@@ -1,5 +1,6 @@
 'use strict';
 const sequelize = require('./sequelize.js'); // initialize DB connection
+const createLowestPriceView = require('./views/createLowestPriceView.js');
 const Car = require('./models/car.js');
 const CarUpdate = require('./models/carUpdate.js');
 
@@ -11,6 +12,8 @@ CarUpdate.belongsTo(Car); // This sets up a foreign key in CarUpdate table refer
 // In other words, creates the tables if they do not exist already
 sequelize.sync({ force: false }).then(() => {
   console.log('Database and tables synced. Tables created if not already present.');
+  // creates the lowest price view after tables are set up
+  createLowestPriceView();
 }).catch(err => {
   console.error(`Encountered an error while syncing: ${err}`);
 });
