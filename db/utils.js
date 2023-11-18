@@ -61,11 +61,6 @@ const addCarToDb = async (carDTO) => {
     WHEELS,
   } = carDTO;
 
-        console.log('PAINT[0]',  PAINT);
-      console.log('INTERIOR[0]',  INTERIOR);
-      console.log('WHEELS[0]',  WHEELS);
-      console.log('CABIN_CONFIG[0]',  CABIN_CONFIG);
-
   try {
     const car = await Car.create({
       model: modelMap[Model],
@@ -85,6 +80,7 @@ const addCarToDb = async (carDTO) => {
       transportationFee: TransportationFee,
       originalInCustomerGarageDate: OriginalInCustomerGarageDate,
       vin: VIN,
+      isAvailable: true,
       dateAdded: sequelize.literal('CURRENT_TIMESTAMP'),
     });
 
@@ -103,7 +99,10 @@ const updateCarAsRemovedFromDb = async (carDTO) => {
   let car;
   try {
     car = await Car.update(
-      { dateRemoved: sequelize.literal('CURRENT_TIMESTAMP') },
+      {
+        dateRemoved: sequelize.literal('CURRENT_TIMESTAMP'),
+        isAvailable: false,
+      },
       {
         where: {
           vin: carDTO.VIN,

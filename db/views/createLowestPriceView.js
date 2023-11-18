@@ -8,8 +8,8 @@ SELECT
   c.odometer,
   c.year,
   MIN(cu.price) AS historical_lowest_price,
-  COALESCE(EXTRACT(EPOCH FROM c.date_removed - c.date_added) / 86400, NULL) AS days_in_inventory,
-  AVG(avg_price_update) AS avg_price_update,
+  ROUND(COALESCE(EXTRACT(EPOCH FROM c.date_removed - c.date_added) / 86400, EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - c.date_added) / 86400, NULL)) AS days_in_inventory,
+  ROUND(AVG(avg_price_update)) AS avg_price_update,
   c.model,
   c.trim,
   c.color,
@@ -19,6 +19,7 @@ SELECT
   c.has_fsd,
   c.has_acceleration_boost,
   c.was_damaged,
+  c.is_available,
   c.city,
   c.state,
   c.store_name,
@@ -39,7 +40,7 @@ LEFT JOIN (
 ) AS avg_price_update_subquery ON cu.car_vin = avg_price_update_subquery.car_vin
 GROUP BY
   c.vin, c.model, c.trim, c.color, c.year, c.odometer, c.interior,
-  c.wheels, c.seat_layout, c.has_fsd, c.has_acceleration_boost, c.was_damaged,
+  c.wheels, c.seat_layout, c.has_fsd, c.has_acceleration_boost, c.was_damaged, c.is_available,
   c.city, c.state, c.store_name, c.transportation_fee, c.original_in_customer_garage_date,
   c.date_added, c.date_removed;
 `;
