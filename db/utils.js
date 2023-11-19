@@ -1,7 +1,12 @@
 const sequelize = require('./sequelize');
 const Car = require('./models/car.js');
 const CarUpdate = require('./models/carUpdate.js');
-const { getPriceMessage } = require('../server/utils.js');
+const {
+  getPriceMessage,
+  sendNotification,
+  getAddedMessage,
+  getRemovedMessage,
+} = require('../server/utils.js');
 
 const modelMap = {
   ms: 'Model S',
@@ -98,7 +103,7 @@ const addCarToDb = async (carDTO) => {
 
 const getAvailableCarsFromDb = async (carDTO) => {
   return await Car.findAll({ where: { isAvailable: true } });
-}
+};
 
 const updateCarAsRemovedFromDb = async (vin) => {
   let car;
@@ -120,6 +125,14 @@ const updateCarAsRemovedFromDb = async (vin) => {
       `Encountered error while updating a car as removed from the db: ${err}`
     );
   }
+};
+
+const getCarPriceInDb = async (vin) => {
+  const update = await CarUpdate.findOne({
+    where: { carVin: vin },
+    order: [['createdAt', 'DESC']],
+  });
+  return update.price;
 };
 
 const updatePriceInDb = async (car, price) => {
@@ -190,11 +203,12 @@ const handleCarsDiff = async (newestCars) => {
 
     // car found in the DB!
     if (matchingCar) {
+      const price = await getCarPriceInDb(matchingCar.vin);
       /** CAR PRICE CHANGE **/
-      if (matchingCar.price !== carDTO.Price) {
-        await updatePriceInDb(matchingCar, carDTO.Price)
+      if (price !== carDTO.Price) {
+        await updatePriceInDb(matchingCar, carDTO.Price);
         priceChangeCars.push(carDTO);
-        priceChangeMessages.push(getPriceMessage(matchingCar.price, carDTO.Price));
+        priceChangeMessages.push(getPriceMessage(price, carDTO.Price));
       }
     } else {
       /** CAR ADDED TO INVENTORY **/
@@ -206,22 +220,22 @@ const handleCarsDiff = async (newestCars) => {
   // find cars in DB that are marked available but are not available on API (removed cars)
   const availableCars = await getAvailableCarsFromDb();
 
-  for (const availableCar of availableCars) {
-    const wasFound = newestCars.find(newCar => newCar.VIN === availableCar.vin);
+  const carsToRemove = availableCars.filter(
+    (availableCar) =>
+      !newestCars.find((newCar) => newCar.VIN !== availableCar.vin)
+  );
 
+  for (const carToRemove of carsToRemove) {
     /** CAR REMOVED FROM INVENTORY **/
-    if (!wasFound) {
-      await updateCarAsRemovedFromDb(availableCar.vin);
-      removedCars.push(availableCar);
-    }
+    await updateCarAsRemovedFromDb(carToRemove.vin);
+    removedCars.push(carToRemove);
   }
-
 
   // Notify in bulk
 
-  if (priceChangeCars) {
+  if (priceChangeCars.length) {
     console.log('Price Change Model Ys:', priceChangeCars);
-    await sendNotification(priceChangeMessages.join(' '), priceChangeCars);
+    await sendNotification(priceChangeMessages.join(' and '), priceChangeCars);
   }
 
   if (addedCars.length) {
@@ -235,12 +249,12 @@ const handleCarsDiff = async (newestCars) => {
     const removedMessage = getRemovedMessage(removedCars);
     await sendNotification(removedMessage, removedCars);
   }
-
 };
 
 module.exports = {
   addCarToDb,
   addNewCarsToDb,
+  getCarPriceInDb,
   handleCarsDiff,
   updateCarAsRemovedFromDb,
   updatePriceAndCarInDb,
