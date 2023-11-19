@@ -1,6 +1,6 @@
 require('dotenv').config();
 require('../db/index.js');
-// require('../client/index.js');
+require('../client/index.js');
 
 const { getBestModelYsUnderPrice, sendNotification } = require('./utils.js');
 const { handleCarsDiff } = require('../db/utils.js');
