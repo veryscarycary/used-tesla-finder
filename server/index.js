@@ -2,8 +2,8 @@ require('dotenv').config();
 require('../db/index.js');
 require('../client/index.js');
 
-const { getBestModelYsUnderPrice, getModelYDiff, sendNotification } = require('./utils');
-const { addNewCarsToDb } = require('../db/utils');
+const { getBestModelYsUnderPrice, sendNotification } = require('./utils');
+const { handleCarsDiff } = require('../db/utils');
 
 const express = require('express');
 const cors = require('cors');
@@ -15,8 +15,6 @@ app.use(cors()); // Enable CORS for all routes
 app.use(express.json());
 
 const MAX_PRICE = 44000;
-let isFirstScrape = true;
-let lastModelYs = [];
 
 // ROUTES
 
@@ -40,16 +38,7 @@ app.post('/scrape', async (req, res) => {
 
   console.log(newModelYs, `Date: ${new Date()}`);
 
-  // add cars to DB if they are missing
-  addNewCarsToDb(newModelYs);
-  
-  if (!isFirstScrape) {
-    await getModelYDiff(newModelYs, lastModelYs);
-  } else {
-    isFirstScrape = false;
-  }
-
-  lastModelYs = newModelYs;
+  await handleCarsDiff(newModelYs);
 });
 
 app.post('/client-failure', async (req, res) => {

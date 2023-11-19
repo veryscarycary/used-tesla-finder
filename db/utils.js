@@ -1,6 +1,7 @@
 const sequelize = require('./sequelize');
 const Car = require('./models/car.js');
 const CarUpdate = require('./models/carUpdate.js');
+const { getPriceMessage } = require('../server/utils.js');
 
 const modelMap = {
   ms: 'Model S',
@@ -95,7 +96,11 @@ const addCarToDb = async (carDTO) => {
   }
 };
 
-const updateCarAsRemovedFromDb = async (carDTO) => {
+const getAvailableCarsFromDb = async (carDTO) => {
+  return await Car.findAll({ where: { isAvailable: true } });
+}
+
+const updateCarAsRemovedFromDb = async (vin) => {
   let car;
   try {
     car = await Car.update(
@@ -105,7 +110,7 @@ const updateCarAsRemovedFromDb = async (carDTO) => {
       },
       {
         where: {
-          vin: carDTO.VIN,
+          vin,
         },
       }
     );
@@ -117,7 +122,27 @@ const updateCarAsRemovedFromDb = async (carDTO) => {
   }
 };
 
-const updatePriceOfCarInDb = async (carDTO) => {
+const updatePriceInDb = async (car, price) => {
+  let carUpdate;
+  try {
+    carUpdate = await CarUpdate.create({ price });
+  } catch (err) {
+    console.error(
+      `Encountered error while updating the price in the car_update table: ${err}`
+    );
+  }
+
+  try {
+    // associate price record to car
+    await car.addCarUpdate(carUpdate);
+  } catch (err) {
+    console.error(
+      `Encountered error while updating a car's price in the db: ${err}`
+    );
+  }
+};
+
+const updatePriceAndCarInDb = async (carDTO) => {
   let car;
   try {
     car = await Car.findOne({
@@ -131,7 +156,7 @@ const updatePriceOfCarInDb = async (carDTO) => {
     );
   }
 
-  const carUpdate = await CarUpdate.create({ price: Price });
+  const carUpdate = await CarUpdate.create({ price: carDTO.Price });
 
   try {
     await car.addCarUpdate(carUpdate);
@@ -142,9 +167,81 @@ const updatePriceOfCarInDb = async (carDTO) => {
   }
 };
 
+const handleCarsDiff = async (newestCars) => {
+  const priceChangeMessages = [];
+  const priceChangeCars = []; // Tesla DTOs
+  const addedCars = []; // Tesla DTOs
+  const removedCars = []; // DB Cars
+
+  for (const carDTO of newestCars) {
+    let matchingCar;
+    // Look up the car in the DB
+    try {
+      matchingCar = await Car.findOne({
+        where: {
+          vin: carDTO.VIN,
+        },
+      });
+    } catch (err) {
+      console.error(
+        `Encountered error while looking up a car by VIN in the db: ${err}`
+      );
+    }
+
+    // car found in the DB!
+    if (matchingCar) {
+      /** CAR PRICE CHANGE **/
+      if (matchingCar.price !== carDTO.Price) {
+        await updatePriceInDb(matchingCar, carDTO.Price)
+        priceChangeCars.push(carDTO);
+        priceChangeMessages.push(getPriceMessage(matchingCar.price, carDTO.Price));
+      }
+    } else {
+      /** CAR ADDED TO INVENTORY **/
+      await addCarToDb(carDTO);
+      addedCars.push(carDTO);
+    }
+  }
+
+  // find cars in DB that are marked available but are not available on API (removed cars)
+  const availableCars = await getAvailableCarsFromDb();
+
+  for (const availableCar of availableCars) {
+    const wasFound = newestCars.find(newCar => newCar.VIN === availableCar.vin);
+
+    /** CAR REMOVED FROM INVENTORY **/
+    if (!wasFound) {
+      await updateCarAsRemovedFromDb(availableCar.vin);
+      removedCars.push(availableCar);
+    }
+  }
+
+
+  // Notify in bulk
+
+  if (priceChangeCars) {
+    console.log('Price Change Model Ys:', priceChangeCars);
+    await sendNotification(priceChangeMessages.join(' '), priceChangeCars);
+  }
+
+  if (addedCars.length) {
+    console.log('Added Model Ys:', addedCars);
+    const addedMessage = getAddedMessage(addedCars);
+    await sendNotification(addedMessage, addedCars);
+  }
+
+  if (removedCars.length) {
+    console.log('Removed Model Ys:', removedCars);
+    const removedMessage = getRemovedMessage(removedCars);
+    await sendNotification(removedMessage, removedCars);
+  }
+
+};
+
 module.exports = {
   addCarToDb,
   addNewCarsToDb,
-  updatePriceOfCarInDb,
+  handleCarsDiff,
   updateCarAsRemovedFromDb,
+  updatePriceAndCarInDb,
 };
