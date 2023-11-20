@@ -48,6 +48,10 @@ app.post('/client-failure', async (req, res) => {
   await sendNotification(errorMessage);
 });
 
+app.post('/health', async (req, res) => {
+  res.send('healthy');
+});
+
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
