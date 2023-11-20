@@ -4,22 +4,22 @@ const createLowestPriceView = () => {
   const createViewQuery = `
 CREATE VIEW car_historical_lowest_price AS
 SELECT
+  c.is_available,
   c.vin,
   c.odometer,
-  c.year,
   MIN(cu.price) AS historical_lowest_price,
   ROUND(COALESCE(EXTRACT(EPOCH FROM c.date_removed - c.date_added) / 86400, EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - c.date_added) / 86400, NULL)) AS days_in_inventory,
   ROUND(AVG(avg_price_update)) AS avg_price_update,
-  c.model,
   c.trim,
+  c.year,
+  c.wheels,
+  c.model,
   c.color,
   c.interior,
-  c.wheels,
   c.seat_layout,
   c.has_fsd,
   c.has_acceleration_boost,
   c.was_damaged,
-  c.is_available,
   c.city,
   c.state,
   c.store_name,
@@ -42,7 +42,9 @@ GROUP BY
   c.vin, c.model, c.trim, c.color, c.year, c.odometer, c.interior,
   c.wheels, c.seat_layout, c.has_fsd, c.has_acceleration_boost, c.was_damaged, c.is_available,
   c.city, c.state, c.store_name, c.transportation_fee, c.original_in_customer_garage_date,
-  c.date_added, c.date_removed;
+  c.date_added, c.date_removed
+ORDER BY
+  c.is_available DESC, c.odometer ASC;
 `;
 
   sequelize

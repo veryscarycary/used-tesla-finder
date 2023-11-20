@@ -18,17 +18,6 @@ const MAX_PRICE = 44000;
 
 // ROUTES
 
-// Create a new example
-// app.post('/create', async (req, res) => {
-//   try {
-//     const newExample = await Car.create({ model: 'Model Y', odometer: 123000 });
-//     res.json(newExample);
-//   } catch (error) {
-//     console.error('Error creating example', error);
-//     res.status(500).send('Internal Server Error');
-//   }
-// });
-
 app.post('/scrape', async (req, res) => {
   // retreiving Tesla Used Car Inventory
   const teslaResponse = req.body;
