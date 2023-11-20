@@ -1,4 +1,7 @@
-const { addCarToDb, updateCarAsRemovedFromDb, updatePriceOfCarInDb } = require("../db/utils");
+// const {
+//   updateCarAsRemovedFromDb,
+//   updatePriceOfCarInDb,
+// } = require('../db/utils.js');
 
 const IFTTT_KEY = process.env.IFTTT_KEY;
 
@@ -11,7 +14,6 @@ const differenceBy = (arr1, arr2, iteratee) => {
 };
 
 const getBestModelYsUnderPrice = (results, price) => {
-
   results = results.filter((car) => car.TransportationFee === 0);
 
   if (price) {
@@ -65,44 +67,43 @@ const getBestModelYsUnderPrice = (results, price) => {
   return mappedResults;
 };
 
-const getModelYDiff = async (newestModelYs, lastModelYs) => {
-  // detect added/removed used inventory
-  const addedModelYs = differenceBy(newestModelYs, lastModelYs, 'VIN');
-  const removedModelYs = differenceBy(lastModelYs, newestModelYs, 'VIN');
+// const getModelYDiff = async (newestModelYs, lastModelYs) => {
+//   // detect added/removed used inventory
+//   const addedModelYs = differenceBy(newestModelYs, lastModelYs, 'VIN');
+//   const removedModelYs = differenceBy(lastModelYs, newestModelYs, 'VIN');
 
-  if (addedModelYs.length) {
-    console.log('Added Model Ys:', addedModelYs);
-    const addedMessage = getAddedMessage(addedModelYs);
-    await sendNotification(addedMessage, addedModelYs);
-  }
+//   if (addedModelYs.length) {
+//     console.log('Added Model Ys:', addedModelYs);
+//     const addedMessage = getAddedMessage(addedModelYs);
+//     await sendNotification(addedMessage, addedModelYs);
+//   }
 
-  if (removedModelYs.length) {
-    console.log('Removed Model Ys:', removedModelYs);
-    const removedMessage = getRemovedMessage(removedModelYs);
-    await sendNotification(removedMessage, removedModelYs);
+//   if (removedModelYs.length) {
+//     console.log('Removed Model Ys:', removedModelYs);
+//     const removedMessage = getRemovedMessage(removedModelYs);
+//     await sendNotification(removedMessage, removedModelYs);
 
-    for (const carDTO of removedModelYs) {
-      await updateCarAsRemovedFromDb(carDTO);
-    }
-  }
+//     for (const carDTO of removedModelYs) {
+//       await updateCarAsRemovedFromDb(carDTO);
+//     }
+//   }
 
-  for (const newCar of newestModelYs) {
-    const matchingCar = lastModelYs.find(
-      (lastCar) => lastCar.VIN === newCar.VIN
-    );
-    if (matchingCar) {
-      if (matchingCar.Price !== newCar.Price) {
-        const priceChangeMessage = getPriceMessage(
-          matchingCar.Price,
-          newCar.Price
-        );
-        await sendNotification(priceChangeMessage, newCar);
-        await updatePriceOfCarInDb(newCar);
-      }
-    }
-  }
-
-};
+//   for (const newCar of newestModelYs) {
+//     const matchingCar = lastModelYs.find(
+//       (lastCar) => lastCar.VIN === newCar.VIN
+//     );
+//     if (matchingCar) {
+//       if (matchingCar.Price !== newCar.Price) {
+//         const priceChangeMessage = getPriceMessage(
+//           matchingCar.Price,
+//           newCar.Price
+//         );
+//         await sendNotification(priceChangeMessage, newCar);
+//         await updatePriceOfCarInDb(newCar);
+//       }
+//     }
+//   }
+// };
 
 const getRemovedMessage = (removedModelYs) => {
   const count = removedModelYs.length > 1 ? removedModelYs.length : 'A';
@@ -162,6 +163,6 @@ module.exports = {
   getAddedMessage,
   getRemovedMessage,
   getBestModelYsUnderPrice,
-  getModelYDiff,
+  // getModelYDiff,
   sendNotification,
 };

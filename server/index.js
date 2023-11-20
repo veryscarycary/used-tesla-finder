@@ -2,8 +2,8 @@ require('dotenv').config();
 require('../db/index.js');
 require('../client/index.js');
 
-const { getBestModelYsUnderPrice, sendNotification } = require('./utils');
-const { handleCarsDiff } = require('../db/utils');
+const { getBestModelYsUnderPrice, sendNotification } = require('./utils.js');
+const { handleCarsDiff } = require('../db/utils.js');
 
 const express = require('express');
 const cors = require('cors');
