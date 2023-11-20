@@ -28,6 +28,9 @@ app.post('/scrape', async (req, res) => {
   console.log(newModelYs, `Date: ${new Date()}`);
 
   await handleCarsDiff(newModelYs);
+
+  res.set('Connection', 'close'); // close connection because requests eventually queue/block
+  res.status(200).send('OK');
 });
 
 app.post('/client-failure', async (req, res) => {
@@ -35,11 +38,12 @@ app.post('/client-failure', async (req, res) => {
   const errorMessage = `Client error encountered: ${message}`;
   console.error(errorMessage);
   await sendNotification(errorMessage);
+  res.status(200).send('OK');
 });
 
 app.get('/health', async (req, res) => {
   console.log('healthy');
-  res.send('healthy');
+  res.status(200).send('healthy');
 });
 
 app.listen(port, () => {
