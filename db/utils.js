@@ -222,7 +222,7 @@ const handleCarsDiff = async (newestCars) => {
 
   const carsToRemove = availableCars.filter(
     (availableCar) =>
-      !newestCars.find((newCar) => newCar.VIN !== availableCar.vin)
+      !newestCars.find((newCar) => newCar.VIN === availableCar.vin)
   );
 
   for (const carToRemove of carsToRemove) {
