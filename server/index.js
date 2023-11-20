@@ -49,6 +49,7 @@ app.post('/client-failure', async (req, res) => {
 });
 
 app.get('/health', async (req, res) => {
+  console.log('healthy');
   res.send('healthy');
 });
 
