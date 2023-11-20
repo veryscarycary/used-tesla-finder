@@ -1,6 +1,7 @@
 'use strict';
 const sequelize = require('./sequelize.js'); // initialize DB connection
 const createLowestPriceView = require('./views/createLowestPriceView.js');
+const createCarUpdatesOrderedView = require('./views/createCarUpdatesOrdered.js');
 const Car = require('./models/car.js');
 const CarUpdate = require('./models/carUpdate.js');
 
@@ -14,6 +15,7 @@ sequelize.sync({ force: false }).then(() => {
   console.log('Database and tables synced. Tables created if not already present.');
   // creates the lowest price view after tables are set up
   createLowestPriceView();
+  createCarUpdatesOrderedView();
 }).catch(err => {
   console.error(`Encountered an error while syncing: ${err}`);
 });
