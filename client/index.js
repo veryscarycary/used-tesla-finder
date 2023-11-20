@@ -9,6 +9,7 @@ const sendToServer = async (route, payload) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Connection': 'close',
     },
     body: JSON.stringify(payload),
   });
