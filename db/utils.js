@@ -18,11 +18,17 @@ const modelMap = {
 };
 
 const hasFsd = (autopilotOptions) => {
-  return autopilotOptions.includes('AUTOPILOT_FULL_SELF_DRIVING');
+  return (
+    Array.isArray(autopilotOptions) &&
+    autopilotOptions.includes('AUTOPILOT_FULL_SELF_DRIVING')
+  );
 };
 
 const hasAccelerationBoost = (additionalOptions) => {
-  return additionalOptions.includes('ACCELERATION_BOOST');
+  return (
+    Array.isArray(additionalOptions) &&
+    additionalOptions.includes('ACCELERATION_BOOST')
+  );
 };
 
 const wasDamaged = (damageDisclosure, hasDamagePhotos) => {
@@ -157,9 +163,9 @@ const getAvailableCarsFromDb = async (carDTO) => {
 };
 
 const updateCarAsRemovedFromDb = async (vin) => {
-  let car;
+  let result;
   try {
-    car = await Car.update(
+    result = await Car.update(
       {
         dateRemoved: sequelize.literal('CURRENT_TIMESTAMP'),
         isAvailable: false,
@@ -168,9 +174,11 @@ const updateCarAsRemovedFromDb = async (vin) => {
         where: {
           vin,
         },
+        returning: true,
+        plain: true,
       }
     );
-    return car;
+    return result[1]; // [rows updated, record object]
   } catch (err) {
     console.error(
       `Encountered error while updating a car as removed from the db: ${err}`
@@ -204,6 +212,8 @@ const updatePriceInDb = async (car, price) => {
       `Encountered error while updating a car's price in the db: ${err}`
     );
   }
+
+  return car;
 };
 
 const updatePriceAndCarInDb = async (carDTO) => {
@@ -261,7 +271,7 @@ const handleCarsDiff = async (newestCars) => {
 
         if (isPreferredCar(car)) {
           priceChangeCars.push(car);
-          priceChangeMessages.push(getPriceMessage(price, car.price));
+          priceChangeMessages.push(getPriceMessage(price, carDTO.Price));
         }
       }
     } else {

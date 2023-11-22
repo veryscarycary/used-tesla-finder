@@ -108,7 +108,6 @@ module.exports = {
   getPriceMessage,
   getAddedMessage,
   getRemovedMessage,
-  mapModelYs,
   // getModelYDiff,
   sendNotification,
 };
