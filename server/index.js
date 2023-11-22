@@ -2,7 +2,7 @@ require('dotenv').config();
 require('../db/index.js');
 require('../client/index.js');
 
-const { getBestModelYsUnderPrice, sendNotification } = require('./utils.js');
+const { sendNotification, mapModelYs } = require('./utils.js');
 const { handleCarsDiff } = require('../db/utils.js');
 
 const express = require('express');
@@ -14,8 +14,6 @@ const port = 3000;
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json());
 
-const MAX_PRICE = 44000;
-
 // ROUTES
 
 app.post('/scrape', async (req, res) => {
@@ -23,9 +21,9 @@ app.post('/scrape', async (req, res) => {
   const teslaResponse = req.body;
   const results = teslaResponse.results;
 
-  const newModelYs = getBestModelYsUnderPrice(results, MAX_PRICE);
+  const newModelYs = mapModelYs(results);
 
-  console.log(newModelYs, `Date: ${new Date()}`);
+  console.log(`${newModelYs.length} Model Ys pulled from Tesla @ Date: ${new Date()}`);
 
   await handleCarsDiff(newModelYs);
 

@@ -13,13 +13,7 @@ const differenceBy = (arr1, arr2, iteratee) => {
   return arr1.filter((c) => !arr2.map(iteratee).includes(iteratee(c)));
 };
 
-const getBestModelYsUnderPrice = (results, price) => {
-  results = results.filter((car) => car.TransportationFee === 0);
-
-  if (price) {
-    results = results.filter((car) => car.Price <= price);
-  }
-
+const mapModelYs = (results) => {
   const mappedResults = results.map(
     ({
       ADL_OPTS,
@@ -162,7 +156,7 @@ module.exports = {
   getPriceMessage,
   getAddedMessage,
   getRemovedMessage,
-  getBestModelYsUnderPrice,
+  mapModelYs,
   // getModelYDiff,
   sendNotification,
 };
