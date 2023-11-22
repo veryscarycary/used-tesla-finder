@@ -13,54 +13,6 @@ const differenceBy = (arr1, arr2, iteratee) => {
   return arr1.filter((c) => !arr2.map(iteratee).includes(iteratee(c)));
 };
 
-const mapModelYs = (results) => {
-  const mappedResults = results.map(
-    ({
-      ADL_OPTS,
-      AUTOPILOT,
-      City,
-      CABIN_CONFIG,
-      DamageDisclosure,
-      HasDamagePhotos,
-      INTERIOR,
-      Model,
-      Odometer,
-      OriginalInCustomerGarageDate,
-      PAINT,
-      Price,
-      StateProvince,
-      TrimName,
-      TransportationFee,
-      VrlName,
-      VIN,
-      WHEELS,
-      Year,
-    }) => ({
-      Price,
-      Model,
-      Year,
-      City,
-      StateProvince,
-      VrlName,
-      Odometer,
-      TransportationFee,
-      TrimName,
-      AUTOPILOT,
-      ADL_OPTS,
-      PAINT,
-      INTERIOR,
-      DamageDisclosure,
-      HasDamagePhotos,
-      OriginalInCustomerGarageDate,
-      CABIN_CONFIG,
-      WHEELS,
-      VIN,
-    })
-  );
-
-  return mappedResults;
-};
-
 // const getModelYDiff = async (newestModelYs, lastModelYs) => {
 //   // detect added/removed used inventory
 //   const addedModelYs = differenceBy(newestModelYs, lastModelYs, 'VIN');

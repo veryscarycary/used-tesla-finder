@@ -19,9 +19,7 @@ app.use(express.json());
 app.post('/scrape', async (req, res) => {
   // retreiving Tesla Used Car Inventory
   const teslaResponse = req.body;
-  const results = teslaResponse.results;
-
-  const newModelYs = mapModelYs(results);
+  const newModelYs = teslaResponse.results;
 
   console.log(`${newModelYs.length} Model Ys pulled from Tesla @ Date: ${new Date()}`);
 

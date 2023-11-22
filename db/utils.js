@@ -29,60 +29,54 @@ const wasDamaged = (damageDisclosure, hasDamagePhotos) => {
   return damageDisclosure || hasDamagePhotos;
 };
 
-const getPreferredCars = (carDTOs) => {
-  const preferredCars = carDTOs.filter((carDTO) => {
-    const isPreferred = Object.entries(CONFIG).reduce((acc, curr) => {
-      if (acc === false) return false; // car doesn't match preferences
+const isPreferredCar = (car) => {
+  return Object.entries(CONFIG).reduce((acc, curr) => {
+    if (acc === false) return false; // car doesn't match preferences
 
-      const currKey = curr[0];
-      const currValue = curr[1];
+    const configKey = curr[0];
+    const configValue = curr[1];
+    const key = configKey.slice(configKey[0].indexOf('_') + 1);
 
-      if (!currValue === '' && !currValue === undefined) {
-        // config has preferred values
+    if (!configValue === '' && !configValue === undefined) {
+      // config has preferred values
 
-        switch (key) {
-          // number, equal or less
-          case 'PREFERRED_Price':
-          case 'PREFERRED_Year':
-          case 'PREFERRED_Odometer':
-          case 'PREFERRED_TransportationFee':
-            return carDTO[currKey] <= currValue;;
-          // string, exact match
-          case 'PREFERRED_Model':
-          case 'PREFERRED_City':
-          case 'PREFERRED_StateProvince':
-          case 'PREFERRED_VrlName':
-          case 'PREFERRED_TrimName':
-          case 'PREFERRED_VIN':
-          // boolean, exact match
-          case 'PREFERRED_DamageDisclosure':
-          case 'PREFERRED_HasDamagePhotos':
-            return carDTO[currKey] === currValue;
-          // array, includes string
-          case 'PREFERRED_PAINT':
-          case 'PREFERRED_AUTOPILOT':
-          case 'PREFERRED_ADL_OPTS':
-          case 'PREFERRED_INTERIOR':
-          case 'PREFERRED_CABIN_CONFIG':
-          case 'PREFERRED_WHEELS':
-            return carDTO[currKey].includes(currValue);
-          // date, after date
-          case 'PREFERRED_OriginalInCustomerGarageDate':
-            return new Date(carDTO[currKey]) >= new Date(currValue)
-          default:
-            return true;
-        }
+      switch (configKey) {
+        // number, equal or less
+        case 'PREFERRED_price':
+        case 'PREFERRED_year':
+        case 'PREFERRED_odometer':
+        case 'PREFERRED_transportationFee':
+          return car[key] <= configValue;
+        // string, exact match
+        case 'PREFERRED_model':
+        case 'PREFERRED_color':
+        case 'PREFERRED_city':
+        case 'PREFERRED_state':
+        case 'PREFERRED_storeName':
+        case 'PREFERRED_trim':
+        case 'PREFERRED_interior':
+        case 'PREFERRED_seatLayout':
+        case 'PREFERRED_wheels':
+        case 'PREFERRED_vin':
+        // boolean, exact match
+        case 'PREFERRED_wasDamaged':
+        case 'PREFERRED_hasFsd':
+        case 'PREFERRED_hasAccelerationBoost':
+          return car[key] === configValue;
+        // date, after date
+        case 'PREFERRED_originalInCustomerGarageDate':
+          return new Date(car[key]) >= new Date(configValue);
+        default:
+          return true;
       }
+    }
 
-      // if no config value specified, we keep going
-      return true;
-    }, true);
-    
-    return isPreferred;
-  });
-
-  return preferredCars;
+    // if no config value specified, we keep going
+    return true;
+  }, true);
 };
+
+const getPreferredCars = (cars) => cars.filter(isPreferredCar);
 
 const addNewCarsToDb = async (carDTOs) => {
   const addedCars = [];
@@ -263,14 +257,20 @@ const handleCarsDiff = async (newestCars) => {
       const price = await getCarPriceInDb(matchingCar.vin);
       /** CAR PRICE CHANGE **/
       if (price !== carDTO.Price) {
-        await updatePriceInDb(matchingCar, carDTO.Price);
-        priceChangeCars.push(carDTO);
-        priceChangeMessages.push(getPriceMessage(price, carDTO.Price));
+        const car = await updatePriceInDb(matchingCar, carDTO.Price);
+
+        if (isPreferredCar(car)) {
+          priceChangeCars.push(car);
+          priceChangeMessages.push(getPriceMessage(price, car.price));
+        }
       }
     } else {
       /** CAR ADDED TO INVENTORY **/
-      await addCarToDb(carDTO);
-      addedCars.push(carDTO);
+      const car = await addCarToDb(carDTO);
+
+      if (isPreferredCar(car)) {
+        addedCars.push(car);
+      }
     }
   }
 
@@ -284,35 +284,33 @@ const handleCarsDiff = async (newestCars) => {
 
   for (const carToRemove of carsToRemove) {
     /** CAR REMOVED FROM INVENTORY **/
-    await updateCarAsRemovedFromDb(carToRemove.vin);
-    removedCars.push(carToRemove);
+    const car = await updateCarAsRemovedFromDb(carToRemove.vin);
+
+    if (isPreferredCar(car)) {
+      removedCars.push(car);
+    }
   }
 
-  // filter for only cars that we care about
-  const preferredPriceChangeCars = getPreferredCars(priceChangeCars);
-  const preferredAddedCars = getPreferredCars(addedCars);
-  const preferredRemovedCars = getPreferredCars(removedCars);
+  // Notify in bulk (preferred cars only)
 
-  // Notify in bulk
-
-  if (preferredPriceChangeCars.length) {
-    console.log('Price Change Model Ys:', preferredPriceChangeCars);
+  if (priceChangeCars.length) {
+    console.log('Price Change Model Ys:', priceChangeCars);
     await sendNotification(
       priceChangeMessages.join(' and '), // TODO, need to get messages only for the preferred price change cars
-      preferredPriceChangeCars
+      priceChangeCars
     );
   }
 
-  if (preferredAddedCars.length) {
-    console.log('Added Model Ys:', preferredAddedCars);
-    const addedMessage = getAddedMessage(preferredAddedCars);
-    await sendNotification(addedMessage, preferredAddedCars);
+  if (addedCars.length) {
+    console.log('Added Model Ys:', addedCars);
+    const addedMessage = getAddedMessage(addedCars);
+    await sendNotification(addedMessage, addedCars);
   }
 
-  if (preferredRemovedCars.length) {
-    console.log('Removed Model Ys:', preferredRemovedCars);
-    const removedMessage = getRemovedMessage(preferredRemovedCars);
-    await sendNotification(removedMessage, preferredRemovedCars);
+  if (removedCars.length) {
+    console.log('Removed Model Ys:', removedCars);
+    const removedMessage = getRemovedMessage(removedCars);
+    await sendNotification(removedMessage, removedCars);
   }
 };
 
