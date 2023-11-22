@@ -17,7 +17,7 @@ const sendToServer = async (route, payload) => {
 
 const fetchModelYsFromTesla = async () => {
   const url =
-    'https://www.tesla.com/inventory/api/v4/inventory-results?query=%7B%22query%22%3A%7B%22model%22%3A%22my%22%2C%22condition%22%3A%22used%22%2C%22options%22%3A%7B%22TRIM%22%3A%5B%22PAWD%22%2C%22LRAWD%22%5D%2C%22PAINT%22%3A%5B%22SILVER%22%5D%2C%22INTERIOR%22%3A%5B%22PREMIUM_BLACK%22%5D%2C%22VehicleHistory%22%3A%5B%22CLEAN%22%5D%2C%22AUTOPILOT%22%3A%5B%22AUTOPILOT_FULL_SELF_DRIVING%22%5D%7D%2C%22arrangeby%22%3A%22Price%22%2C%22order%22%3A%22asc%22%2C%22market%22%3A%22US%22%2C%22language%22%3A%22en%22%2C%22super_region%22%3A%22north%20america%22%2C%22lng%22%3A-117.1558867%2C%22lat%22%3A32.8256427%2C%22zip%22%3A%2292111%22%2C%22range%22%3A0%2C%22region%22%3A%22CA%22%7D%2C%22offset%22%3A0%2C%22count%22%3A50%2C%22outsideOffset%22%3A0%2C%22outsideSearch%22%3Afalse%7D';
+    'https://www.tesla.com/inventory/api/v4/inventory-results?query=%7B%22query%22%3A%7B%22model%22%3A%22my%22%2C%22condition%22%3A%22used%22%2C%22options%22%3A%7B%7D%2C%22arrangeby%22%3A%22Price%22%2C%22order%22%3A%22asc%22%2C%22market%22%3A%22US%22%2C%22language%22%3A%22en%22%2C%22super_region%22%3A%22north%20america%22%2C%22lng%22%3A-117.1558867%2C%22lat%22%3A32.8256427%2C%22zip%22%3A%2292111%22%2C%22range%22%3A0%2C%22region%22%3A%22CA%22%7D%2C%22offset%22%3A0%2C%22count%22%3A50%2C%22outsideOffset%22%3A0%2C%22outsideSearch%22%3Afalse%2C%22isFalconDeliverySelectionEnabled%22%3Afalse%2C%22version%22%3Anull%7D';
 
   const headers = {
     headers: {
@@ -32,7 +32,7 @@ const fetchModelYsFromTesla = async () => {
       'sec-fetch-site': 'same-origin',
     },
     referrer:
-      'https://www.tesla.com/inventory/used/my?TRIM=PAWD,LRAWD&PAINT=SILVER&INTERIOR=PREMIUM_BLACK&VehicleHistory=CLEAN&AUTOPILOT=AUTOPILOT_FULL_SELF_DRIVING&arrangeby=plh&zip=92111',
+      'https://www.tesla.com/inventory/used/my?arrangeby=plh&zip=92111',
     referrerPolicy: 'strict-origin-when-cross-origin',
     body: null,
     method: 'GET',
