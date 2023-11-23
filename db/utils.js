@@ -87,25 +87,6 @@ const isPreferredCar = async (car) => {
   return isPreferred;
 };
 
-const getPreferredCars = (cars) => cars.filter(isPreferredCar);
-
-const addNewCarsToDb = async (carDTOs) => {
-  const addedCars = [];
-
-  const carsInDb = await Car.findAll();
-
-  for (const carDTO of carDTOs) {
-    if (carsInDb.some((car) => car.vin === carDTO.VIN)) {
-      continue;
-    } else {
-      const car = await addCarToDb(carDTO);
-      addedCars.push(car);
-    }
-  }
-
-  return addedCars;
-};
-
 const addCarToDb = async (carDTO) => {
   const {
     Price,
@@ -275,7 +256,7 @@ const handleCarsDiff = async (newestCars) => {
         const car = await updatePriceInDb(matchingCar, carDTO.Price);
 
         if (await isPreferredCar(car)) {
-          priceChangeCars.push(car);
+          priceChangeCars.push(car.get({ plain: true }));
           priceChangeMessages.push(getPriceMessage(price, carDTO.Price));
         }
       }
@@ -284,7 +265,7 @@ const handleCarsDiff = async (newestCars) => {
       const car = await addCarToDb(carDTO);
 
       if (await isPreferredCar(car)) {
-        addedCars.push(car);
+        addedCars.push(car.get({ plain: true }));
       }
     }
   }
@@ -302,7 +283,7 @@ const handleCarsDiff = async (newestCars) => {
     const car = await updateCarAsRemovedFromDb(carToRemove.vin);
 
     if (await isPreferredCar(car)) {
-      removedCars.push(car);
+      removedCars.push(car.get({ plain: true }));
     }
   }
 
@@ -331,7 +312,6 @@ const handleCarsDiff = async (newestCars) => {
 
 module.exports = {
   addCarToDb,
-  addNewCarsToDb,
   getCarPriceInDb,
   handleCarsDiff,
   updateCarAsRemovedFromDb,
