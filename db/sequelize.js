@@ -10,6 +10,7 @@ const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
   define: {
     underscored: true,
   },
+  logging: false // set true to see SQL statements in terminal
 });
 
 module.exports = sequelize;

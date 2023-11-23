@@ -79,18 +79,11 @@ const mapModelYs = (results) => {
   return mappedResults;
 };
 
-const fetchModelYsFromTesla = async (searchType, results = []) => {
-  const localUrl =
+const fetchModelYsFromTesla = async (results = []) => {
+  const url =
     'https://www.tesla.com/inventory/api/v4/inventory-results?query=%7B%22query%22%3A%7B%22model%22%3A%22my%22%2C%22condition%22%3A%22used%22%2C%22options%22%3A%7B%7D%2C%22arrangeby%22%3A%22Price%22%2C%22order%22%3A%22asc%22%2C%22market%22%3A%22US%22%2C%22language%22%3A%22en%22%2C%22super_region%22%3A%22north%20america%22%2C%22lng%22%3A-117.1558867%2C%22lat%22%3A32.8256427%2C%22zip%22%3A%2292111%22%2C%22range%22%3A0%2C%22region%22%3A%22CA%22%7D%2C%22offset%22%3A' +
     results.length +
     '%2C%22count%22%3A50%2C%22outsideOffset%22%3A0%2C%22outsideSearch%22%3Afalse%2C%22isFalconDeliverySelectionEnabled%22%3Afalse%2C%22version%22%3Anull%7D';
-
-  const generalUrl =
-    'https://www.tesla.com/inventory/api/v4/inventory-results?query=%7B%22query%22%3A%7B%22model%22%3A%22my%22%2C%22condition%22%3A%22used%22%2C%22options%22%3A%7B%7D%2C%22arrangeby%22%3A%22Price%22%2C%22order%22%3A%22asc%22%2C%22market%22%3A%22US%22%2C%22language%22%3A%22en%22%2C%22super_region%22%3A%22north%20america%22%7D%2C%22offset%22%3A0%2C%22count%22%3A50%2C%22outsideOffset%22%3A' +
-    results.length +
-    '%2C%22outsideSearch%22%3Atrue%2C%22isFalconDeliverySelectionEnabled%22%3Afalse%2C%22version%22%3Anull%7D';
-
-  const url = searchType === 'general' ? generalUrl : localUrl;
 
   const headers = {
     headers: {
@@ -130,7 +123,7 @@ const fetchModelYsFromTesla = async (searchType, results = []) => {
 
   // increase the offset and fetch more cars
   if (totalMatchesFound && results.length < totalMatchesFound) {
-    response = fetchModelYsFromTesla(searchType, results);
+    response = fetchModelYsFromTesla(results);
   } else {
     response.results = results;
   }
@@ -139,19 +132,8 @@ const fetchModelYsFromTesla = async (searchType, results = []) => {
 };
 
 const fetchAllModelYs = async () => {
-  const generalResponse = await fetchModelYsFromTesla('general');
-  const localResponse = await fetchModelYsFromTesla('local');
-  console.log(generalResponse.results.length + 'general results @ Date: ' + new Date());
-  console.log(localResponse.results.length + 'local results @ Date: ' + new Date());
-
-  const totalResults = unionBy(generalResponse.results, localResponse.results, 'VIN');
-
-  const response = {
-    results: totalResults,
-    total_matches_found: totalResults.length,
-  };
-
-  console.log(response, 'Date: ' + new Date());
+  const response = await fetchModelYsFromTesla();
+  console.log('Fetched ' + response.results.length + ' results @ Date: ' + new Date());
 
   try {
     await sendToServer('/scrape', response);
@@ -165,7 +147,7 @@ fetchAllModelYs();
 
 setInterval(async function () {
   await fetchAllModelYs();
-}, 1000 * 60 * 10); // every 10 minutes;
+}, 1000 * 60 * 5); // every 5 minutes;
 
 `;
 
