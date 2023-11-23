@@ -2,7 +2,7 @@ require('dotenv').config();
 require('../db/index.js');
 require('../client/index.js');
 
-const { sendNotification, mapModelYs } = require('./utils.js');
+const { sendNotification } = require('./utils.js');
 const { handleCarsDiff } = require('../db/utils.js');
 
 const express = require('express');

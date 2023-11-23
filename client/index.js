@@ -117,8 +117,6 @@ const fetchModelYsFromTesla = async (searchType, results = []) => {
   try {
     resp = await fetch(url, headers);
     response = await resp.json();
-    console.log(response, 'Date: ' + new Date());
-
     results = results.concat(mapModelYs(response.results));
   } catch (error) {
     console.error(
@@ -132,7 +130,7 @@ const fetchModelYsFromTesla = async (searchType, results = []) => {
 
   // increase the offset and fetch more cars
   if (totalMatchesFound && results.length < totalMatchesFound) {
-    response = fetchModelYsFromTesla(results);
+    response = fetchModelYsFromTesla(searchType, results);
   } else {
     response.results = results;
   }
@@ -143,13 +141,17 @@ const fetchModelYsFromTesla = async (searchType, results = []) => {
 const fetchAllModelYs = async () => {
   const generalResponse = await fetchModelYsFromTesla('general');
   const localResponse = await fetchModelYsFromTesla('local');
+  console.log(generalResponse.results.length + 'general results @ Date: ' + new Date());
+  console.log(localResponse.results.length + 'local results @ Date: ' + new Date());
+
+  const totalResults = unionBy(generalResponse.results, localResponse.results, 'VIN');
 
   const response = {
-    results: unionBy(generalResponse.results, localResponse.results, 'vin'),
-    total_matches_found:
-      Number(generalResponse.total_matches_found) +
-      Number(localResponse.total_matches_found),
+    results: totalResults,
+    total_matches_found: totalResults.length,
   };
+
+  console.log(response, 'Date: ' + new Date());
 
   try {
     await sendToServer('/scrape', response);
