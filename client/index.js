@@ -9,10 +9,26 @@ const sendToServer = async (route, payload) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Connection': 'close',
+      Connection: 'close',
     },
     body: JSON.stringify(payload),
   });
+};
+
+// WARNING: This is not a drop in replacement solution and
+// it might not work for some edge cases. Test your code!
+const unionBy = (arr, ...args) => {
+  let iteratee = args.pop();
+  if (typeof iteratee === 'string') {
+    const prop = iteratee;
+    iteratee = (item) => item[prop];
+  }
+
+  return arr
+    .concat(...args)
+    .filter(
+      (x, i, self) => i === self.findIndex((y) => iteratee(x) === iteratee(y))
+    );
 };
 
 const mapModelYs = (results) => {
@@ -63,10 +79,18 @@ const mapModelYs = (results) => {
   return mappedResults;
 };
 
-const fetchModelYsFromTesla = async (numResultsFetched = 0) => {
+const fetchModelYsFromTesla = async (searchType, results = []) => {
+  const localUrl =
+    'https://www.tesla.com/inventory/api/v4/inventory-results?query=%7B%22query%22%3A%7B%22model%22%3A%22my%22%2C%22condition%22%3A%22used%22%2C%22options%22%3A%7B%7D%2C%22arrangeby%22%3A%22Price%22%2C%22order%22%3A%22asc%22%2C%22market%22%3A%22US%22%2C%22language%22%3A%22en%22%2C%22super_region%22%3A%22north%20america%22%2C%22lng%22%3A-117.1558867%2C%22lat%22%3A32.8256427%2C%22zip%22%3A%2292111%22%2C%22range%22%3A0%2C%22region%22%3A%22CA%22%7D%2C%22offset%22%3A' +
+    results.length +
+    '%2C%22count%22%3A50%2C%22outsideOffset%22%3A0%2C%22outsideSearch%22%3Afalse%2C%22isFalconDeliverySelectionEnabled%22%3Afalse%2C%22version%22%3Anull%7D';
 
-  const url =
-    'https://www.tesla.com/inventory/api/v4/inventory-results?query=%7B%22query%22%3A%7B%22model%22%3A%22my%22%2C%22condition%22%3A%22used%22%2C%22options%22%3A%7B%7D%2C%22arrangeby%22%3A%22Price%22%2C%22order%22%3A%22asc%22%2C%22market%22%3A%22US%22%2C%22language%22%3A%22en%22%2C%22super_region%22%3A%22north%20america%22%2C%22lng%22%3A-117.1558867%2C%22lat%22%3A32.8256427%2C%22zip%22%3A%2292111%22%2C%22range%22%3A0%2C%22region%22%3A%22CA%22%7D%2C%22offset%22%3A' + numResultsFetched + '%2C%22count%22%3A50%2C%22outsideOffset%22%3A0%2C%22outsideSearch%22%3Afalse%2C%22isFalconDeliverySelectionEnabled%22%3Afalse%2C%22version%22%3Anull%7D';
+  const generalUrl =
+    'https://www.tesla.com/inventory/api/v4/inventory-results?query=%7B%22query%22%3A%7B%22model%22%3A%22my%22%2C%22condition%22%3A%22used%22%2C%22options%22%3A%7B%7D%2C%22arrangeby%22%3A%22Price%22%2C%22order%22%3A%22asc%22%2C%22market%22%3A%22US%22%2C%22language%22%3A%22en%22%2C%22super_region%22%3A%22north%20america%22%7D%2C%22offset%22%3A0%2C%22count%22%3A50%2C%22outsideOffset%22%3A' +
+    results.length +
+    '%2C%22outsideSearch%22%3Atrue%2C%22isFalconDeliverySelectionEnabled%22%3Afalse%2C%22version%22%3Anull%7D';
+
+  const url = searchType === 'general' ? generalUrl : localUrl;
 
   const headers = {
     headers: {
@@ -80,8 +104,7 @@ const fetchModelYsFromTesla = async (numResultsFetched = 0) => {
       'sec-fetch-mode': 'cors',
       'sec-fetch-site': 'same-origin',
     },
-    referrer:
-      'https://www.tesla.com/inventory/used/my?arrangeby=plh&zip=92111',
+    referrer: 'https://www.tesla.com/inventory/used/my?arrangeby=plh&zip=92111',
     referrerPolicy: 'strict-origin-when-cross-origin',
     body: null,
     method: 'GET',
@@ -91,16 +114,12 @@ const fetchModelYsFromTesla = async (numResultsFetched = 0) => {
 
   let resp;
   let response;
-  let results;
   try {
     resp = await fetch(url, headers);
     response = await resp.json();
     console.log(response, 'Date: ' + new Date());
 
-    results = mapModelYs(response.results);
-    response.results = results;
-
-    await sendToServer('/scrape', response);
+    results = results.concat(mapModelYs(response.results));
   } catch (error) {
     console.error(
       'Error making the Tesla Used Car Inventory request:',
@@ -109,20 +128,42 @@ const fetchModelYsFromTesla = async (numResultsFetched = 0) => {
     await sendToServer('/client-failure', { message: error.message });
   }
 
+  const totalMatchesFound = Number(response.total_matches_found);
+
   // increase the offset and fetch more cars
-  if (numResultsFetched + results.length < response.total_matches_found) {
-    fetchModelYsFromTesla(numResultsFetched + results.length);
+  if (totalMatchesFound && results.length < totalMatchesFound) {
+    response = fetchModelYsFromTesla(results);
+  } else {
+    response.results = results;
   }
 
   return response;
 };
 
+const fetchAllModelYs = async () => {
+  const generalResponse = await fetchModelYsFromTesla('general');
+  const localResponse = await fetchModelYsFromTesla('local');
 
-fetchModelYsFromTesla();
+  const response = {
+    results: unionBy(generalResponse.results, localResponse.results, 'vin'),
+    total_matches_found:
+      Number(generalResponse.total_matches_found) +
+      Number(localResponse.total_matches_found),
+  };
+
+  try {
+    await sendToServer('/scrape', response);
+  } catch (error) {
+    console.error('Error sending mapped Teslas to server:', error.message);
+    await sendToServer('/client-failure', { message: error.message });
+  }
+};
+
+fetchAllModelYs();
 
 setInterval(async function () {
-  await fetchModelYsFromTesla();
-}, 1000 * 60 * 5); // every 5 minutes;
+  await fetchAllModelYs();
+}, 1000 * 60 * 10); // every 10 minutes;
 
 `;
 

@@ -35,20 +35,23 @@ const wasDamaged = (damageDisclosure, hasDamagePhotos) => {
   return damageDisclosure || hasDamagePhotos;
 };
 
-const isPreferredCar = (car) => {
-  return Object.entries(CONFIG).reduce((acc, curr) => {
+const isPreferredCar = async (car) => {
+  const price = await getCarPriceInDb(car.vin);
+
+  const isPreferred = Object.entries(CONFIG).reduce((acc, curr) => {
     if (acc === false) return false; // car doesn't match preferences
 
     const configKey = curr[0];
     const configValue = curr[1];
-    const key = configKey.slice(configKey[0].indexOf('_') + 1);
+    const key = configKey.slice(configKey.indexOf('_') + 1);
 
-    if (!configValue === '' && !configValue === undefined) {
+    if (configValue !== '' && configValue !== undefined) {
       // config has preferred values
 
       switch (configKey) {
-        // number, equal or less
         case 'PREFERRED_price':
+          return price <= configValue;
+        // number, equal or less
         case 'PREFERRED_year':
         case 'PREFERRED_odometer':
         case 'PREFERRED_transportationFee':
@@ -80,6 +83,8 @@ const isPreferredCar = (car) => {
     // if no config value specified, we keep going
     return true;
   }, true);
+
+  return isPreferred;
 };
 
 const getPreferredCars = (cars) => cars.filter(isPreferredCar);
@@ -269,7 +274,7 @@ const handleCarsDiff = async (newestCars) => {
       if (price !== carDTO.Price) {
         const car = await updatePriceInDb(matchingCar, carDTO.Price);
 
-        if (isPreferredCar(car)) {
+        if (await isPreferredCar(car)) {
           priceChangeCars.push(car);
           priceChangeMessages.push(getPriceMessage(price, carDTO.Price));
         }
@@ -278,7 +283,7 @@ const handleCarsDiff = async (newestCars) => {
       /** CAR ADDED TO INVENTORY **/
       const car = await addCarToDb(carDTO);
 
-      if (isPreferredCar(car)) {
+      if (await isPreferredCar(car)) {
         addedCars.push(car);
       }
     }
@@ -296,7 +301,7 @@ const handleCarsDiff = async (newestCars) => {
     /** CAR REMOVED FROM INVENTORY **/
     const car = await updateCarAsRemovedFromDb(carToRemove.vin);
 
-    if (isPreferredCar(car)) {
+    if (await isPreferredCar(car)) {
       removedCars.push(car);
     }
   }
