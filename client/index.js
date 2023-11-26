@@ -135,11 +135,13 @@ const fetchAllModelYs = async () => {
   const response = await fetchModelYsFromTesla();
   console.log('Fetched ' + response.results.length + ' results @ Date: ' + new Date());
 
-  try {
-    await sendToServer('/scrape', response);
-  } catch (error) {
-    console.error('Error sending mapped Teslas to server:', error.message);
-    await sendToServer('/client-failure', { message: error.message });
+  if (response.results.length) {
+    try {
+      await sendToServer('/scrape', response);
+    } catch (error) {
+      console.error('Error sending mapped Teslas to server:', error.message);
+      await sendToServer('/client-failure', { message: error.message });
+    }
   }
 };
 
