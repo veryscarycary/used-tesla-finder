@@ -9,6 +9,7 @@ SELECT
   c.odometer,
   MIN(cu.price) AS historical_lowest_price,
   ROUND(COALESCE(EXTRACT(EPOCH FROM c.date_removed - c.date_added) / 86400, EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - c.date_added) / 86400, NULL)) AS days_in_inventory,
+  -(MAX(cu.price) - MIN(cu.price)) AS total_price_drop,
   ROUND(AVG(avg_price_update)) AS avg_price_update,
   c.trim,
   c.year,
