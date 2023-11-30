@@ -155,13 +155,9 @@ const updateCarAsAvailableInDb = async (car) => {
       {
         dateRemoved: null,
         isAvailable: true,
-      },
-      {
-        returning: true,
-        plain: true,
       }
     );
-    return result[1]; // [rows updated, record object]
+    return result;
   } catch (err) {
     console.error(
       `Encountered error while updating a car as available in the db: ${err}`
