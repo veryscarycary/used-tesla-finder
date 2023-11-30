@@ -148,6 +148,27 @@ const getAvailableCarsFromDb = async (carDTO) => {
   return await Car.findAll({ where: { isAvailable: true } });
 };
 
+const updateCarAsAvailableInDb = async (car) => {
+  let result;
+  try {
+    result = await car.update(
+      {
+        dateRemoved: null,
+        isAvailable: true,
+      },
+      {
+        returning: true,
+        plain: true,
+      }
+    );
+    return result[1]; // [rows updated, record object]
+  } catch (err) {
+    console.error(
+      `Encountered error while updating a car as available in the db: ${err}`
+    );
+  }
+};
+
 const updateCarAsRemovedFromDb = async (vin) => {
   let result;
   try {
@@ -259,6 +280,11 @@ const handleCarsDiff = async (newestCars) => {
           priceChangeCars.push(car.get({ plain: true }));
           priceChangeMessages.push(getPriceMessage(price, carDTO.Price));
         }
+      }
+
+      if (!matchingCar.isAvailable) {
+        // car was either mistakenly marked as unavailable or car came back into stock
+        await updateCarAsAvailableInDb(matchingCar);
       }
     } else {
       /** CAR ADDED TO INVENTORY **/
