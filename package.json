@@ -2,10 +2,10 @@
   "name": "tesla-finder",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./server/index.js",
   "scripts": {
     "start": "node ./server/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "debug": "node --inspect ./server/index.js && echo \"click 'open dedicated DevTools for node' in chrome from page chrome://inspect. In dedicated DevTools window add connection localhost:9229 to connect automatically.\""
   },
   "author": "",
@@ -17,5 +17,9 @@
     "pg": "^8.11.3",
     "selenium-webdriver": "^4.15.0",
     "sequelize": "^6.35.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "rosie": "^2.1.1"
   }
 }
