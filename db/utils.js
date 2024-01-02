@@ -24,6 +24,13 @@ const hasFsd = (autopilotOptions) => {
   );
 };
 
+const hasEap = (autopilotOptions) => {
+  return (
+    Array.isArray(autopilotOptions) &&
+    autopilotOptions.includes('ENHANCED_AUTOPILOT')
+  );
+};
+
 const hasAccelerationBoost = (additionalOptions) => {
   return (
     Array.isArray(additionalOptions) &&
@@ -70,6 +77,7 @@ const isPreferredCar = async (car) => {
         // boolean, exact match
         case 'PREFERRED_wasDamaged':
         case 'PREFERRED_hasFsd':
+        case 'PREFERRED_hasEap':
         case 'PREFERRED_hasAccelerationBoost':
           return car[key] === configValue;
         // date, after date
@@ -123,6 +131,7 @@ const addCarToDb = async (carDTO) => {
       wheels: WHEELS[0],
       seatLayout: CABIN_CONFIG[0],
       hasFsd: hasFsd(AUTOPILOT),
+      hasEap: hasEap(AUTOPILOT),
       hasAccelerationBoost: hasAccelerationBoost(ADL_OPTS),
       wasDamaged: wasDamaged(DamageDisclosure, HasDamagePhotos),
       storeName: VrlName,
@@ -161,6 +170,23 @@ const updateCarAsAvailableInDb = async (car) => {
   } catch (err) {
     console.error(
       `Encountered error while updating a car as available in the db: ${err}`
+    );
+  }
+};
+
+const updateCarEapInDb = async (car, carDTO) => {
+  let result;
+
+  try {
+    result = await car.update(
+      {
+        hasEap: hasEap(carDTO.AUTOPILOT),
+      }
+    );
+    return result;
+  } catch (err) {
+    console.error(
+      `Encountered error while updating a car EAP in the db: ${err}`
     );
   }
 };
@@ -282,6 +308,8 @@ const handleCarsDiff = async (newestCars) => {
         // car was either mistakenly marked as unavailable or car came back into stock
         await updateCarAsAvailableInDb(matchingCar);
       }
+
+      await updateCarEapInDb(matchingCar, carDTO);
     } else {
       /** CAR ADDED TO INVENTORY **/
       const car = await addCarToDb(carDTO);

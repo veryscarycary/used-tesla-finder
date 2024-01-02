@@ -19,6 +19,7 @@ SELECT
   c.interior,
   c.seat_layout,
   c.has_fsd,
+  c.has_eap,
   c.has_acceleration_boost,
   c.was_damaged,
   c.city,
@@ -41,7 +42,7 @@ LEFT JOIN (
 ) AS avg_price_update_subquery ON cu.car_vin = avg_price_update_subquery.car_vin
 GROUP BY
   c.vin, c.model, c.trim, c.color, c.year, c.odometer, c.interior,
-  c.wheels, c.seat_layout, c.has_fsd, c.has_acceleration_boost, c.was_damaged, c.is_available,
+  c.wheels, c.seat_layout, c.has_fsd, c.has_eap, c.has_acceleration_boost, c.was_damaged, c.is_available,
   c.city, c.state, c.store_name, c.transportation_fee, c.original_in_customer_garage_date,
   c.date_added, c.date_removed
 ORDER BY

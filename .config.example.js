@@ -12,6 +12,7 @@ module.exports = {
   PREFERRED_trim: '',
   PREFERRED_transportationFee: 0,
   PREFERRED_hasFsd: true,
+  PREFERRED_hasEap: undefined,
   PREFERRED_hasAccelerationBoost: undefined,
   PREFERRED_interior: 'PREMIUM_BLACK',
   PREFERRED_wasDamaged: false,

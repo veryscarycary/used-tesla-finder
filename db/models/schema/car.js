@@ -25,6 +25,7 @@ const carSchema = {
   wheels: STR,
   seatLayout: STR,
   hasFsd: BOOL,
+  hasEap: BOOL,
   hasAccelerationBoost: BOOL,
   wasDamaged: BOOL,
   isAvailable: BOOL,
