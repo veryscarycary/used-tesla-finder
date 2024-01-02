@@ -174,23 +174,6 @@ const updateCarAsAvailableInDb = async (car) => {
   }
 };
 
-const updateCarEapInDb = async (car, carDTO) => {
-  let result;
-
-  try {
-    result = await car.update(
-      {
-        hasEap: hasEap(carDTO.AUTOPILOT),
-      }
-    );
-    return result;
-  } catch (err) {
-    console.error(
-      `Encountered error while updating a car EAP in the db: ${err}`
-    );
-  }
-};
-
 const updateCarAsRemovedFromDb = async (vin) => {
   let result;
   try {
@@ -308,8 +291,6 @@ const handleCarsDiff = async (newestCars) => {
         // car was either mistakenly marked as unavailable or car came back into stock
         await updateCarAsAvailableInDb(matchingCar);
       }
-
-      await updateCarEapInDb(matchingCar, carDTO);
     } else {
       /** CAR ADDED TO INVENTORY **/
       const car = await addCarToDb(carDTO);
