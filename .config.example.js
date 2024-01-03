@@ -14,6 +14,7 @@ module.exports = {
   PREFERRED_hasFsd: true,
   PREFERRED_hasEap: undefined,
   PREFERRED_hasAccelerationBoost: undefined,
+  PREFERRED_hasTowHitch: undefined,
   PREFERRED_interior: 'PREMIUM_BLACK',
   PREFERRED_wasDamaged: false,
   PREFERRED_originalInCustomerGarageDate: undefined,

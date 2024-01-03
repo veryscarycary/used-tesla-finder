@@ -27,6 +27,7 @@ const carSchema = {
   hasFsd: BOOL,
   hasEap: BOOL,
   hasAccelerationBoost: BOOL,
+  hasTowHitch: BOOL,
   wasDamaged: BOOL,
   isAvailable: BOOL,
   city: STR,

@@ -31,6 +31,27 @@ const hasEap = (autopilotOptions) => {
   );
 };
 
+const hasTowHitch = (additionalOptions) => {
+  return Array.isArray(additionalOptions) && additionalOptions.includes('TOWING');
+};
+
+const updateCarTowHitchInDb = async (car, carDTO) => {
+  let result;
+
+  try {
+    result = await car.update(
+      {
+        hasTowHitch: hasTowHitch(carDTO.ADL_OPTS),
+      }
+    );
+    return result;
+  } catch (err) {
+    console.error(
+      `Encountered error while updating a car hitch in the db: ${err}`
+    );
+  }
+};
+
 const hasAccelerationBoost = (additionalOptions) => {
   return (
     Array.isArray(additionalOptions) &&
@@ -79,6 +100,7 @@ const isPreferredCar = async (car) => {
         case 'PREFERRED_hasFsd':
         case 'PREFERRED_hasEap':
         case 'PREFERRED_hasAccelerationBoost':
+        case 'PREFERRED_hasTowHitch':
           return car[key] === configValue;
         // date, after date
         case 'PREFERRED_originalInCustomerGarageDate':
@@ -133,6 +155,7 @@ const addCarToDb = async (carDTO) => {
       hasFsd: hasFsd(AUTOPILOT),
       hasEap: hasEap(AUTOPILOT),
       hasAccelerationBoost: hasAccelerationBoost(ADL_OPTS),
+      hasTowHitch: hasTowHitch(ADL_OPTS),
       wasDamaged: wasDamaged(DamageDisclosure, HasDamagePhotos),
       storeName: VrlName,
       transportationFee: TransportationFee,
@@ -291,6 +314,8 @@ const handleCarsDiff = async (newestCars) => {
         // car was either mistakenly marked as unavailable or car came back into stock
         await updateCarAsAvailableInDb(matchingCar);
       }
+
+      await updateCarTowHitchInDb(matchingCar, carDTO);
     } else {
       /** CAR ADDED TO INVENTORY **/
       const car = await addCarToDb(carDTO);
