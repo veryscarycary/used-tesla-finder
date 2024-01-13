@@ -3,7 +3,7 @@
 module.exports = {
   PREFERRED_price: 44000,
   PREFERRED_model: 'Model Y',
-  PREFERRED_year: 2022,
+  PREFERRED_year: '>=2021',
   PREFERRED_city: '',
   PREFERRED_state: '',
   PREFERRED_storeName: '',

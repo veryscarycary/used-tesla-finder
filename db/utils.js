@@ -77,12 +77,30 @@ const isPreferredCar = async (car) => {
       // config has preferred values
 
       switch (configKey) {
+        // number, greater than, less than
         case 'PREFERRED_price':
           return price <= configValue;
-        // number, equal or less
         case 'PREFERRED_year':
         case 'PREFERRED_odometer':
         case 'PREFERRED_transportationFee':
+          if (typeof configValue === 'string') {
+            const symbol = configValue.includes('=') ? configValue.slice(0, 2) : configValue.slice(0, 1);
+            const numString = configValue.includes('=') ? configValue.slice(2) : configValue.slice(1);
+            const num = Number(numString);
+
+            switch(symbol) {
+              case '>':
+                return car[key] > num;
+              case '>=':
+                return car[key] >= num;
+              case '<':
+                return car[key] < num;
+              case '<=':
+                return car[key] <= num;
+              default:
+                return car[key] <= Number(configValue);
+            }
+          }
           return car[key] <= configValue;
         // string, exact match
         case 'PREFERRED_model':
