@@ -72,6 +72,7 @@ const isPreferredCar = async (car) => {
     const configKey = curr[0];
     const configValue = curr[1];
     const key = configKey.slice(configKey.indexOf('_') + 1);
+    const carValue = key === 'price' ? price + car.transportationFee : car[key];
 
     if (configValue !== '' && configValue !== undefined) {
       // config has preferred values
@@ -82,14 +83,16 @@ const isPreferredCar = async (car) => {
         case 'PREFERRED_year':
         case 'PREFERRED_odometer':
         case 'PREFERRED_transportationFee':
-          const carValue = key === 'price' ? price + car.transportationFee : car[key];
-
           if (typeof configValue === 'string') {
-            const symbol = configValue.includes('=') ? configValue.slice(0, 2) : configValue.slice(0, 1);
-            const numString = configValue.includes('=') ? configValue.slice(2) : configValue.slice(1);
+            const symbol = configValue.includes('=')
+              ? configValue.slice(0, 2)
+              : configValue.slice(0, 1);
+            const numString = configValue.includes('=')
+              ? configValue.slice(2)
+              : configValue.slice(1);
             const num = Number(numString);
 
-            switch(symbol) {
+            switch (symbol) {
               case '>':
                 return carValue > num;
               case '>=':
@@ -121,10 +124,13 @@ const isPreferredCar = async (car) => {
         case 'PREFERRED_hasEap':
         case 'PREFERRED_hasAccelerationBoost':
         case 'PREFERRED_hasTowHitch':
-          return car[key] === configValue;
+          if (typeof configValue === 'string' && configValue[0] === '!') {
+            return carValue !== configValue.slice(1);
+          }
+          return carValue === configValue;
         // date, after date
         case 'PREFERRED_originalInCustomerGarageDate':
-          return new Date(car[key]) >= new Date(configValue);
+          return new Date(carValue) >= new Date(configValue);
         default:
           return true;
       }

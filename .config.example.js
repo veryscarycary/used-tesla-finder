@@ -9,7 +9,7 @@ module.exports = {
   PREFERRED_storeName: '',
   PREFERRED_odometer: '<30000',
   PREFERRED_color: 'SILVER',
-  PREFERRED_trim: '',
+  PREFERRED_trim: '!Model Y Standard Range Rear-Wheel Drive',
   PREFERRED_transportationFee: 0,
   PREFERRED_hasFsd: true,
   PREFERRED_hasEap: undefined,
