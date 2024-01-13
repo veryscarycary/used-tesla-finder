@@ -82,7 +82,7 @@ const isPreferredCar = async (car) => {
         case 'PREFERRED_year':
         case 'PREFERRED_odometer':
         case 'PREFERRED_transportationFee':
-          const carValue = key === 'price' ? price : car[key];
+          const carValue = key === 'price' ? price + car.transportationFee : car[key];
 
           if (typeof configValue === 'string') {
             const symbol = configValue.includes('=') ? configValue.slice(0, 2) : configValue.slice(0, 1);
@@ -102,7 +102,7 @@ const isPreferredCar = async (car) => {
                 return carValue <= Number(configValue);
             }
           }
-          
+
           return carValue <= configValue;
         // string, exact match
         case 'PREFERRED_model':

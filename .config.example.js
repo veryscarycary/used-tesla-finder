@@ -7,7 +7,7 @@ module.exports = {
   PREFERRED_city: '',
   PREFERRED_state: '',
   PREFERRED_storeName: '',
-  PREFERRED_odometer: undefined,
+  PREFERRED_odometer: '<30000',
   PREFERRED_color: 'SILVER',
   PREFERRED_trim: '',
   PREFERRED_transportationFee: 0,
