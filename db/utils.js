@@ -66,7 +66,7 @@ const wasDamaged = (damageDisclosure, hasDamagePhotos) => {
 const isPreferredCar = async (car) => {
   const price = await getCarPriceInDb(car.vin);
 
-  const isPreferred = Object.entries(CONFIG).reduce((acc, curr) => {
+  const isPreferred = (config) => Object.entries(config).reduce((acc, curr) => {
     if (acc === false) return false; // car doesn't match preferences
 
     const configKey = curr[0];
@@ -140,7 +140,11 @@ const isPreferredCar = async (car) => {
     return true;
   }, true);
 
-  return isPreferred;
+  if (Array.isArray(CONFIG)) {
+    return CONFIG.some(config => isPreferred(config));
+  }
+
+  return isPreferred(CONFIG);
 };
 
 const addCarToDb = async (carDTO) => {
