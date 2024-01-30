@@ -89,14 +89,14 @@ Of course, these notifications will be sent to you ONLY if the car matches your 
 2. Create a new applet
 3. For the If This section, select "Webhooks". Name the webhook event name "send_tesla_text"
 <p float="left">
-  <img src="https://github.com/veryscarycary/used-tesla-finder/assets/16945851/cc026680-49be-4c9e-87f9-24afdc5636ce" width="200" height="300" />
-  <img src="https://github.com/veryscarycary/used-tesla-finder/assets/16945851/637684e4-6344-4cbb-b3ae-88cd964357a3" width="200" height="300" />
-  <img src="https://github.com/veryscarycary/used-tesla-finder/assets/16945851/07dded40-956a-4d32-a40e-b371f0c996ac" width="200" height="300" />
+  <img src="https://github.com/veryscarycary/used-tesla-finder/assets/16945851/cc026680-49be-4c9e-87f9-24afdc5636ce" width="200" height="350" />
+  <img src="https://github.com/veryscarycary/used-tesla-finder/assets/16945851/637684e4-6344-4cbb-b3ae-88cd964357a3" width="200" height="350" />
+  <img src="https://github.com/veryscarycary/used-tesla-finder/assets/16945851/07dded40-956a-4d32-a40e-b371f0c996ac" width="200" height="350" />
 </p>
 4. For the Then That section, select "Notifications". Click "add ingredient" to add the following values: "Value 1" "Value 2" and "OccurredAt". Create the action.
 <p float="left">
-  <img src="https://github.com/veryscarycary/used-tesla-finder/assets/16945851/712732a0-f133-47c0-a684-8fb84b556f27" width="200" height="300" />
-  <img src="https://github.com/veryscarycary/used-tesla-finder/assets/16945851/ad314234-7087-45e5-b917-82a011c8b7da" width="200" height="300" />
+  <img src="https://github.com/veryscarycary/used-tesla-finder/assets/16945851/712732a0-f133-47c0-a684-8fb84b556f27" width="200" height="350" />
+  <img src="https://github.com/veryscarycary/used-tesla-finder/assets/16945851/ad314234-7087-45e5-b917-82a011c8b7da" width="200" height="350" />
 </p>
 5. Go to the [Webhooks service page](https://ifttt.com/maker_webhooks) and click Documentation. Copy your webhooks key at the top of the page.
 
