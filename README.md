@@ -99,8 +99,7 @@ Of course, these notifications will be sent to you ONLY if the car matches your 
   <img src="https://github.com/veryscarycary/used-tesla-finder/assets/16945851/ad314234-7087-45e5-b917-82a011c8b7da" width="200" height="350" />
 </p>
 5. Go to the [Webhooks service page](https://ifttt.com/maker_webhooks) and click Documentation. Copy your webhooks key at the top of the page.
-
-Now, back in the project, make a copy of the .env.example file, but name it ```.env```. Paste your IFTTT Webhooks key after where it says IFTTT_KEY=
+6. Now, back in the project, make a copy of the .env.example file, but name it ```.env```. Paste your IFTTT Webhooks key after where it says IFTTT_KEY=
 
 After this, you'll need to configure the .config.js file to notify you when a car matches your preferences.
 
