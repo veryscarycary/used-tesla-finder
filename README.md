@@ -3,8 +3,10 @@ A small app that helps track used inventory and price movement
 
 ## Dependencies
 
+```
 Postgres
 NodeJS
+```
 
 ### Postgres
 
@@ -28,8 +30,6 @@ And that's it for the postgres setup.
 ### Node
 
 * [Node.js](http://nodejs.org/)
-
-Tested working with Node v16.20.1 (npm v8.19.4) (There are known issues when using Node v18)
 
 If you don't already have Node installed, download Node. If you want to switch between Node versions with ease, I recommend installing NVM(Node Version Manager) to enable you to switch between Node versions.
 
@@ -55,11 +55,6 @@ nvm use 18
 
 ### Installation
 
-1. `cd` into the project directory(wherever you git cloned this project)
-2. Run `npm install`
-3. Run `npm run start`
-
-e.g.
 ```
 cd [path-where-you-ran-git-clone]/used-tesla-finder
 npm install
@@ -72,7 +67,9 @@ npm install
 npm run start
 ```
 
-After running the final command, the chrome browser should open and navigate to the Tesla website. It is necessary to keep this browser window open for the entire duration of running this program as it is needed to scrape the inventory data from Tesla's servers. Every 5 minutes, a script running in the browser will scrape data into your database. If you keep the program running for long enough, you'll amass some pretty good historical data on what to expect in terms of used market pricing in your DB. I recommend downloading [pgAdmin](https://www.pgadmin.org/download/pgadmin-4-macos/) for looking at your db in a GUI format.
+After running the final command, the chrome browser should open and navigate to the Tesla website. It is necessary to keep this browser window open for the entire duration of running this program as it is needed to scrape the inventory data from Tesla's servers. Every 5 minutes, a script running in the browser will scrape data into your database. If you keep the program running for long enough, you'll amass some pretty good historical data on what to expect in terms of used market pricing in your DB.
+
+I recommend downloading [pgAdmin](https://www.pgadmin.org/download/pgadmin-4-macos/) for looking at your db in a GUI format.
 
 ### Notifications
 
