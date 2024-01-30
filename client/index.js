@@ -79,14 +79,15 @@ const mapModelYs = (results) => {
   return mappedResults;
 };
 
-const fetchModelYsFromTesla = async (searchType, results = []) => {
+const fetchCarsFromTesla = async (searchType, results = []) => {
+  const MODEL = 'my';
   const localUrl =
-    'https://www.tesla.com/inventory/api/v4/inventory-results?query=%7B%22query%22%3A%7B%22model%22%3A%22my%22%2C%22condition%22%3A%22used%22%2C%22options%22%3A%7B%7D%2C%22arrangeby%22%3A%22Price%22%2C%22order%22%3A%22asc%22%2C%22market%22%3A%22US%22%2C%22language%22%3A%22en%22%2C%22super_region%22%3A%22north%20america%22%2C%22lng%22%3A-117.1558867%2C%22lat%22%3A32.8256427%2C%22zip%22%3A%2292111%22%2C%22range%22%3A0%2C%22region%22%3A%22CA%22%7D%2C%22offset%22%3A' +
+    'https://www.tesla.com/inventory/api/v4/inventory-results?query=%7B%22query%22%3A%7B%22model%22%3A%22' + MODEL + '%22%2C%22condition%22%3A%22used%22%2C%22options%22%3A%7B%7D%2C%22arrangeby%22%3A%22Price%22%2C%22order%22%3A%22asc%22%2C%22market%22%3A%22US%22%2C%22language%22%3A%22en%22%2C%22super_region%22%3A%22north%20america%22%2C%22lng%22%3A-117.1558867%2C%22lat%22%3A32.8256427%2C%22zip%22%3A%2292111%22%2C%22range%22%3A0%2C%22region%22%3A%22CA%22%7D%2C%22offset%22%3A' +
     results.length +
     '%2C%22count%22%3A50%2C%22outsideOffset%22%3A0%2C%22outsideSearch%22%3Afalse%2C%22isFalconDeliverySelectionEnabled%22%3Afalse%2C%22version%22%3Anull%7D';
 
   const generalUrl =
-    'https://www.tesla.com/inventory/api/v4/inventory-results?query=%7B%22query%22%3A%7B%22model%22%3A%22my%22%2C%22condition%22%3A%22used%22%2C%22options%22%3A%7B%7D%2C%22arrangeby%22%3A%22Price%22%2C%22order%22%3A%22asc%22%2C%22market%22%3A%22US%22%2C%22language%22%3A%22en%22%2C%22super_region%22%3A%22north%20america%22%2C%22lng%22%3A-117.1558867%2C%22lat%22%3A32.8256427%2C%22zip%22%3A%2292111%22%2C%22range%22%3A0%2C%22region%22%3A%22CA%22%7D%2C%22offset%22%3A50%2C%22count%22%3A50%2C%22outsideOffset%22%3A' +
+    'https://www.tesla.com/inventory/api/v4/inventory-results?query=%7B%22query%22%3A%7B%22model%22%3A%22' + MODEL + '%22%2C%22condition%22%3A%22used%22%2C%22options%22%3A%7B%7D%2C%22arrangeby%22%3A%22Price%22%2C%22order%22%3A%22asc%22%2C%22market%22%3A%22US%22%2C%22language%22%3A%22en%22%2C%22super_region%22%3A%22north%20america%22%2C%22lng%22%3A-117.1558867%2C%22lat%22%3A32.8256427%2C%22zip%22%3A%2292111%22%2C%22range%22%3A0%2C%22region%22%3A%22CA%22%7D%2C%22offset%22%3A50%2C%22count%22%3A50%2C%22outsideOffset%22%3A' +
     results.length +
     '%2C%22outsideSearch%22%3Atrue%2C%22isFalconDeliverySelectionEnabled%22%3Afalse%2C%22version%22%3Anull%7D';
 
@@ -129,7 +130,7 @@ const fetchModelYsFromTesla = async (searchType, results = []) => {
 
   // increase the offset and fetch more cars
   if (totalMatchesFound && results.length < totalMatchesFound) {
-    response = fetchModelYsFromTesla(searchType, results);
+    response = fetchCarsFromTesla(searchType, results);
   } else {
     response.results = results;
   }
@@ -137,9 +138,9 @@ const fetchModelYsFromTesla = async (searchType, results = []) => {
   return response;
 };
 
-const fetchAllModelYs = async () => {
-  const generalResponse = await fetchModelYsFromTesla('general');
-  const localResponse = await fetchModelYsFromTesla('local');
+const fetchAllCars = async () => {
+  const generalResponse = await fetchCarsFromTesla('general');
+  const localResponse = await fetchCarsFromTesla('local');
   const totalResults = unionBy(
     generalResponse.results,
     localResponse.results,
@@ -164,10 +165,10 @@ const fetchAllModelYs = async () => {
   }
 };
 
-fetchAllModelYs();
+fetchAllCars();
 
 setInterval(async function () {
-  await fetchAllModelYs();
+  await fetchAllCars();
 }, 1000 * 60 * 5); // every 5 minutes;
 
 `;
