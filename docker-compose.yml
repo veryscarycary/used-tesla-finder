@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:14
+    env_file: .env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_DB: ${DB_NAME:-inventory}
+      POSTGRES_USER: ${DB_USER:-admin}
+      POSTGRES_PASSWORD: ${DB_PASS:-changeme}
+
+  app:
+    build: .
+    env_file: .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    volumes:
+      - .:/usr/src/app
+    command: npm run start
+    environment:
+      DOCKER_COMPOSE: true
+
+volumes:
+  postgres-data:
