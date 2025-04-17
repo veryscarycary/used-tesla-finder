@@ -165,6 +165,11 @@ const fetchAllCars = async () => {
   }
 };
 
+// wait for page to load first
+window.addEventListener('load', () => {
+  setTimeout(fetchTeslaInventory, 3000);
+});
+
 fetchAllCars();
 
 setInterval(async function () {

@@ -11,7 +11,8 @@ async function runScriptInDevTools(script) {
     '--disable-gpu',
     '--disable-software-rasterizer',
     '--disable-extensions',
-    '--remote-debugging-port=9222'
+    '--remote-debugging-port=9222',
+    '--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36'
   );
 
   // Enable browser logging
