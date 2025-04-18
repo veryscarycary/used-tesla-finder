@@ -4,6 +4,7 @@ services:
     env_file: .env
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./inventory-seed-db.sql:/docker-entrypoint-initdb.d/seed.sql:ro
     ports:
       - "${DB_PORT:-5432}:5432"
     environment:
